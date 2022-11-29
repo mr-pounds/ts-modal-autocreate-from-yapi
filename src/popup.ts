@@ -2,9 +2,9 @@
  * @Name         :
  * @Version      : 1.0.1
  * @Author       : zzz
- * @Date         : 2022-11-29 15:13:29
+ * @Date         : 2022-11-29 21:10:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-29 19:36:42
+ * @LastEditTime : 2022-11-29 21:11:18
  */
 import * as vscode from "vscode";
 import configuration from "./utils/configuration";
@@ -14,17 +14,7 @@ import {
   titleInputBox,
 } from "./components/inputbox";
 
-export async function fetcher(args: any) {
-  // 读取vscode的配置项
-  const { host, token } = await chooseYApiProject();
-
-  //  执行下一步动作
-
-  //  判断在哪个路径生成文件
-  // 如果 args 是 undefined，则生成到项目的根目录下，如果根目录不存在，就报错终止执行
-}
-
-async function addYApiProject() {
+export async function addYApiProject() {
   // 获取新的url及token，并添加到配置中
   let host = "";
   await hostInputBox().then((newHost) => {
@@ -53,7 +43,7 @@ async function addYApiProject() {
   };
 }
 
-function chooseYApiProject() {
+export function chooseYApiProject() {
   const newProjectPlaceHolder = "New YApi Project";
   return new Promise<IChooseYApiProjectResponse>((resolve) => {
     const yapiProjectList = configuration.yapiProjectList();

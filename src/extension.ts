@@ -4,12 +4,12 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 14:58:13
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-29 18:47:06
+ * @LastEditTime : 2022-11-29 21:12:00
  */
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { fetcher } from "./yapiFetcher";
+import { fetcher } from "./controller";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
