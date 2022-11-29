@@ -1,0 +1,79 @@
+{
+  "name": "ts-modal-autocreate-from-yapi",
+  "displayName": "ts_modal_autocreate_from_yapi",
+  "description": "auto create typescript types and apis from yapi apis.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.73.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:ts-modal-autocreate-from-yapi.helloWorld"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ts-modal-autocreate-from-yapi.helloWorld",
+        "title": "Hello World"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "ts-modal-autocreate-from-yapi.helloWorld",
+          "group": "group1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TS Modal AutoCreate From YApi",
+      "order": 1,
+      "properties": {
+        "ts-modal-autocreate-from-yapi.yapiProjectTokenList": {
+          "type": "array",
+          "default": [
+            {
+              "host": "http://172.17.0.71:3000",
+              "token": "01abce24c02a2fd3b4c722e96a462a7b5f4a4ec0e257d4bd8ba5b667a1e83e75",
+              "title": "物联网-用户端"
+            }
+          ],
+          "description": "this is YApi project's token. You can get it form your project's settings. default to fetch api information from this token. You can change token when you run command!"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.73.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "@vscode/test-electron": "^2.2.0",
+    "eslint": "^8.26.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "ts-loader": "^9.4.1",
+    "typescript": "^4.8.4",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "axios": "^1.2.0"
+  }
+}
