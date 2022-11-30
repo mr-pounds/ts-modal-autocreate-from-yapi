@@ -4,23 +4,23 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 17:02:33
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-29 19:46:28
+ * @LastEditTime : 2022-11-30 15:00:48
  */
 import * as vscode from "vscode";
 
 function inputBox(config: any) {
   return new Promise<string>((resolve) => {
-    vscode.window
-      .showInputBox(config)
-      .then((result) => resolve(result as string));
+    vscode.window.showInputBox(config).then((result) => {
+      resolve(result as string);
+    });
   });
 }
 
 export async function hostInputBox() {
-  return await inputBox({
+  return inputBox({
     title: "YApi Host",
     password: false,
-    ignoreFocusOut: true,
+    ignoreFocusOut: false,
     placeHolder: "Please enter yapi host",
     validateInput: (text: any) => {
       if (!(text.startsWith("http://") || text.startsWith("https://"))) {

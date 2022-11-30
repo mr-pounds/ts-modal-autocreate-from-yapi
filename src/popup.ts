@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 21:10:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-29 21:11:18
+ * @LastEditTime : 2022-11-30 16:09:11
  */
 import * as vscode from "vscode";
 import configuration from "./utils/configuration";
@@ -13,22 +13,32 @@ import {
   tokenInputBox,
   titleInputBox,
 } from "./components/inputbox";
+import yapiRequests from "./yapi/services";
 
+/**
+ * @description : 新增 YApi 的项目信息并直接使用
+ * @return      正常情况返回 {host, token}。若是中断输入动作，则返回 undefined
+ */
 export async function addYApiProject() {
   // 获取新的url及token，并添加到配置中
-  let host = "";
-  await hostInputBox().then((newHost) => {
-    host = newHost;
+  let host = await hostInputBox().then((newHost) => {
+    return newHost;
   });
-  let token = "";
-  await tokenInputBox().then((newToken) => {
-    token = newToken;
+  if (host === undefined) {
+    return;
+  }
+  let token = await tokenInputBox().then((newToken) => {
+    return newToken;
   });
-
-  let title = "";
-  await titleInputBox().then((newTitle) => {
-    title = newTitle;
+  if (token === undefined) {
+    return;
+  }
+  let title = await titleInputBox().then((newTitle) => {
+    return newTitle;
   });
+  if (title === undefined) {
+    return;
+  }
   //  更新配置
   let oldProjectList = configuration.yapiProjectList();
   oldProjectList?.push({
@@ -43,36 +53,56 @@ export async function addYApiProject() {
   };
 }
 
-export function chooseYApiProject() {
+/**
+ * @description :
+ * @return       {*}
+ */
+export async function chooseYApiProject() {
   const newProjectPlaceHolder = "New YApi Project";
-  return new Promise<IChooseYApiProjectResponse>((resolve) => {
-    const yapiProjectList = configuration.yapiProjectList();
-    // 先选择项目
-    let projectTitleList = yapiProjectList?.map((item) => {
-      return item.title;
-    });
-    if (projectTitleList?.length === 0) {
-      addYApiProject().then((item) => {
-        resolve(item);
-      });
-    }
-    projectTitleList?.push(newProjectPlaceHolder);
-    vscode.window
-      .showQuickPick(projectTitleList as readonly string[])
-      .then((value) => {
-        if (value === newProjectPlaceHolder) {
-          addYApiProject().then((item) => {
-            resolve(item);
-          });
+  const yapiProjectList = configuration.yapiProjectList();
+  // 先选择项目
+  let projectTitleList = yapiProjectList?.map((item) => item.title);
+  if (projectTitleList?.length === 0) {
+    return await addYApiProject().then((item) => item);
+  }
+  projectTitleList?.push(newProjectPlaceHolder);
+  return await vscode.window
+    .showQuickPick(projectTitleList as readonly string[])
+    .then(async (value) => {
+      if (value === undefined) {
+        return;
+      }
+      if (value === newProjectPlaceHolder) {
+        return await addYApiProject().then((item) => item);
+      }
+      let result = undefined;
+      yapiProjectList?.forEach((item) => {
+        if (item.title === value) {
+          result = {
+            host: item.host,
+            token: item.token,
+          };
         }
-        yapiProjectList?.forEach((item) => {
-          if (item.title === value) {
-            resolve({
-              host: item.host,
-              token: item.token,
-            });
-          }
-        });
       });
+      return result;
+    });
+}
+
+export async function chooseApis(host: string, token: string) {
+  let apiList = await yapiRequests.getApiList(host, token);
+  let choosedList = await vscode.window
+    .showQuickPick(apiList?.map((item) => item.title) as readonly string[], {
+      canPickMany: true,
+    })
+    .then((values) => values);
+  if (choosedList === undefined) {
+    return;
+  }
+  const choosedAPiList: IApi[] = [];
+  apiList?.forEach((item) => {
+    if (choosedList?.includes(item.title)) {
+      choosedAPiList.push(item);
+    }
   });
+  return choosedAPiList;
 }

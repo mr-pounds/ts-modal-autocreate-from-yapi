@@ -4,22 +4,32 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:18:00
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-29 19:01:07
+ * @LastEditTime : 2022-11-30 15:49:20
  */
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import * as vscode from "vscode";
 
 const yapiRequests = {
-  getBaseInfo(url: string, token: string) {
+  getApiList(host: string, token: string) {
+    const url = host.endsWith("/")
+      ? host + "api/interface/list"
+      : host + "/api/interface/list";
     return axios
-      .get(url, {
+      .get<any, AxiosResponse<IYApiResponse<IApiListResponse>>>(url, {
         params: {
           token,
+          limit: 1000,
         },
       })
       .then((data) => {
-        console.log(data);
+        if (data.data["errcode"] !== 0) {
+          vscode.window.showErrorMessage(data.data["errmsg"]);
+        }
+        return data.data["data"]["list"];
       })
-      .catch(() => {});
+      .catch((err) => {
+        vscode.window.showErrorMessage(err["message"]);
+      });
   },
 };
 
