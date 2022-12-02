@@ -1,4 +1,4 @@
-import { camelCase } from "../utils/getApiTitle";
+import { camelCase } from "../utils";
 
 /*
  * @Name         :
@@ -6,7 +6,7 @@ import { camelCase } from "../utils/getApiTitle";
  * @Author       : zzz
  * @Date         : 2022-12-01 14:34:50
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 10:46:32
+ * @LastEditTime : 2022-12-02 16:38:30
  */
 
 interface IextractInterfaceResult {

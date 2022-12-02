@@ -4,9 +4,9 @@
  * @Author       : zzz
  * @Date         : 2022-12-01 11:29:34
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 14:47:23
+ * @LastEditTime : 2022-12-02 16:38:35
  */
-import { camelCase } from "../utils/getApiTitle";
+import { camelCase } from "../utils";
 import { extractInterface } from "./jsonToInterface";
 
 export function getQueryInterface(apiDetail: IApiDetail, apiTitle: string) {

@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 21:10:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 15:51:57
+ * @LastEditTime : 2022-12-02 16:34:44
  */
 import * as vscode from "vscode";
 import { configuration } from "./utils";
@@ -13,7 +13,11 @@ import {
   tokenInputBox,
   titleInputBox,
 } from "./components/inputbox";
-import yapiServices from "./yapi";
+import yapiService from "./yapi";
+
+function _excuteInputBox(func: IinputBoxFunction): Promise<string> | undefined {
+  return func()?.then((value) => value);
+}
 
 /**
  * @description : 新增 YApi 的项目信息并直接使用
@@ -21,24 +25,19 @@ import yapiServices from "./yapi";
  */
 export async function addYApiProject() {
   // 获取新的url及token，并添加到配置中
-  let host = await hostInputBox().then((newHost) => {
-    return newHost;
-  });
+  let host = await _excuteInputBox(hostInputBox);
   if (host === undefined) {
     return;
   }
-  let token = await tokenInputBox().then((newToken) => {
-    return newToken;
-  });
+  let token = await _excuteInputBox(tokenInputBox);
   if (token === undefined) {
     return;
   }
-  let title = await titleInputBox().then((newTitle) => {
-    return newTitle;
-  });
+  let title = await await _excuteInputBox(titleInputBox);
   if (title === undefined) {
     return;
   }
+
   //  更新配置
   let oldProjectList = configuration.yapiProjectList();
   oldProjectList?.push({
@@ -54,27 +53,34 @@ export async function addYApiProject() {
 }
 
 /**
- * @description :
- * @return       {*}
+ * @description : 让用户选择 yapi 的项目，若是配置中没有项目，则直接让用户新增项目。
+ * @return
  */
 export async function chooseYApiProject() {
-  const newProjectPlaceHolder = "New YApi Project";
+  // 获取配置
   const yapiProjectList = configuration.yapiProjectList();
-  // 先选择项目
-  let projectTitleList = yapiProjectList?.map((item) => item.title);
-  if (projectTitleList?.length === 0) {
-    return await addYApiProject().then((item) => item);
+
+  // 若配置中，没有有效的配置数据，就直接新增项目
+  if (yapiProjectList.length === 0) {
+    return await addYApiProject();
   }
-  projectTitleList?.push(newProjectPlaceHolder);
+
+  // 展示所有的项目及新增项目选项
+  const newProjectPlaceHolder = ">> New YApi Project <<";
+  let yapiProjectTitleList = yapiProjectList.map((item) => item.title);
+  yapiProjectTitleList.push(newProjectPlaceHolder);
   return await vscode.window
-    .showQuickPick(projectTitleList as readonly string[])
+    .showQuickPick(yapiProjectTitleList!)
     .then(async (value) => {
+      // 中断输入，则返回 undefined
       if (value === undefined) {
         return;
       }
+      // 选择新增项目
       if (value === newProjectPlaceHolder) {
-        return await addYApiProject().then((item) => item);
+        return await addYApiProject();
       }
+      // 找到对应的 yapiProject
       let result = undefined;
       yapiProjectList?.forEach((item) => {
         if (item.title === value) {
@@ -89,18 +95,25 @@ export async function chooseYApiProject() {
 }
 
 export async function chooseApis(host: string, token: string) {
-  let apiList = await yapiServices.getApiList(host, token);
+  let apiList = await yapiService.getApiList(host, token);
   if (apiList === undefined) {
     return;
   }
+  // 让用户选择接口，支持多选。
   let choosedList = await vscode.window
-    .showQuickPick(apiList?.map((item) => item.title) as readonly string[], {
-      canPickMany: true,
-    })
+    .showQuickPick(
+      apiList.map((item) => item.title),
+      {
+        canPickMany: true,
+      }
+    )
     .then((values) => values);
+  // 中断输入
   if (choosedList === undefined) {
     return;
   }
+
+  // 匹配选中的接口
   const choosedAPiList: IApi[] = [];
   apiList?.forEach((item) => {
     if (choosedList?.includes(item.title)) {
