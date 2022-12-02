@@ -4,18 +4,25 @@
  * @Author       : zzz
  * @Date         : 2022-11-30 16:18:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-30 16:33:16
+ * @LastEditTime : 2022-12-02 13:39:53
  */
 import * as vscode from "vscode";
 import { dirname } from "path";
+import { createUri } from "../utils/createUri";
 
-function getDir(input: string) {
-  return dirname(input);
+async function getDir(args: vscode.Uri) {
+  return await vscode.workspace.fs.stat(args).then((stats) => {
+    if (stats.type === 1) {
+      return createUri(dirname(args["fsPath"]));
+    } else {
+      return args;
+    }
+  });
 }
 
-export function getWorkFolder(args: any) {
+export async function getWorkFolder(args: any) {
   if (args !== undefined) {
-    return getDir(args["fsPath"]);
+    return await getDir(args);
   }
 
   const folders = vscode.workspace.workspaceFolders;
@@ -23,5 +30,5 @@ export function getWorkFolder(args: any) {
     return;
   }
   let rootFolder = folders[0];
-  return rootFolder.uri.fsPath;
+  return rootFolder.uri;
 }

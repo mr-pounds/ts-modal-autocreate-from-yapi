@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:18:00
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-30 15:49:20
+ * @LastEditTime : 2022-12-01 14:29:45
  */
 import axios, { AxiosResponse } from "axios";
 import * as vscode from "vscode";
@@ -26,6 +26,28 @@ const yapiRequests = {
           vscode.window.showErrorMessage(data.data["errmsg"]);
         }
         return data.data["data"]["list"];
+      })
+      .catch((err) => {
+        vscode.window.showErrorMessage(err["message"]);
+      });
+  },
+
+  getApiDetail(host: string, token: string, id: number) {
+    const url = host.endsWith("/")
+      ? host + "api/interface/get"
+      : host + "/api/interface/get";
+    return axios
+      .get<any, AxiosResponse<IYApiResponse<IApiDetail>>>(url, {
+        params: {
+          token,
+          id,
+        },
+      })
+      .then((data) => {
+        if (data.data["errcode"] !== 0) {
+          vscode.window.showErrorMessage(data.data["errmsg"]);
+        }
+        return data.data["data"];
       })
       .catch((err) => {
         vscode.window.showErrorMessage(err["message"]);

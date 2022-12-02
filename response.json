@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "success": { "type": "boolean", "mock": { "mock": "true" } },
+    "data": { "type": "object", "properties": {}, "required": [] },
+    "msg": { "type": "string", "mock": { "mock": "null" } },
+    "code": { "type": "string", "mock": { "mock": "100" } }
+  },
+  "required": ["success", "data", "msg", "code"]
+}

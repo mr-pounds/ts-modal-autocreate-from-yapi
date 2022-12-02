@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 21:10:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-30 16:09:11
+ * @LastEditTime : 2022-12-01 11:31:48
  */
 import * as vscode from "vscode";
 import configuration from "./utils/configuration";
@@ -90,6 +90,9 @@ export async function chooseYApiProject() {
 
 export async function chooseApis(host: string, token: string) {
   let apiList = await yapiRequests.getApiList(host, token);
+  if (apiList === undefined) {
+    return;
+  }
   let choosedList = await vscode.window
     .showQuickPick(apiList?.map((item) => item.title) as readonly string[], {
       canPickMany: true,
