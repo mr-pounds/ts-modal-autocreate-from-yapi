@@ -10,20 +10,20 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:ts-modal-autocreate-from-yapi.helloWorld"
+    "onCommand:ts-modal-autocreate-from-yapi.main"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "ts-modal-autocreate-from-yapi.helloWorld",
-        "title": "Hello World"
+        "command": "ts-modal-autocreate-from-yapi.main",
+        "title": "Create Interface from YApi"
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "command": "ts-modal-autocreate-from-yapi.helloWorld",
+          "command": "ts-modal-autocreate-from-yapi.main",
           "group": "group1"
         }
       ]

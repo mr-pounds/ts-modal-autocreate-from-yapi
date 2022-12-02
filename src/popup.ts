@@ -4,16 +4,16 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 21:10:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-01 11:31:48
+ * @LastEditTime : 2022-12-02 15:51:57
  */
 import * as vscode from "vscode";
-import configuration from "./utils/configuration";
+import { configuration } from "./utils";
 import {
   hostInputBox,
   tokenInputBox,
   titleInputBox,
 } from "./components/inputbox";
-import yapiRequests from "./yapi/services";
+import yapiServices from "./yapi";
 
 /**
  * @description : 新增 YApi 的项目信息并直接使用
@@ -89,7 +89,7 @@ export async function chooseYApiProject() {
 }
 
 export async function chooseApis(host: string, token: string) {
-  let apiList = await yapiRequests.getApiList(host, token);
+  let apiList = await yapiServices.getApiList(host, token);
   if (apiList === undefined) {
     return;
   }

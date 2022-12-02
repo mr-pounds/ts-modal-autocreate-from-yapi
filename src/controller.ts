@@ -4,23 +4,21 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:13:29
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 14:53:17
+ * @LastEditTime : 2022-12-02 15:48:33
  */
 
 import * as vscode from "vscode";
 import { chooseYApiProject, chooseApis } from "./popup";
-import { getWorkFolder } from "./utils/getWorkFolder";
-import yapiRequests from "./yapi/services";
+import { getWorkFolder, createUri, getApiTitle } from "./utils";
+import yapiServices from "./yapi";
 import {
   getQueryInterface,
   getFormInterface,
   getResponseInterface,
 } from "./parser/queryInterface";
-import getApiTitle from "./utils/getApiTitle";
-import { createUri } from "./utils/createUri";
 import { writeInterfaceToFile } from "./writer/writeInterfaceToFile";
 
-export async function fetcher(args: any) {
+export async function controller(args: any) {
   // 读取vscode的配置项
   let chooseResult = await chooseYApiProject();
   if (!chooseResult) {
@@ -83,7 +81,7 @@ export async function fetcher(args: any) {
 
         choosedAPiList?.forEach(async (api, index) => {
           // 获取接口数据
-          const apiDetail = await yapiRequests.getApiDetail(
+          const apiDetail = await yapiServices.getApiDetail(
             host,
             token,
             api._id

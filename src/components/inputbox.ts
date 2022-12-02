@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 17:02:33
  * @LastEditors  : zzz
- * @LastEditTime : 2022-11-30 15:00:48
+ * @LastEditTime : 2022-12-02 15:53:20
  */
 import * as vscode from "vscode";
 
@@ -16,7 +16,7 @@ function inputBox(config: any) {
   });
 }
 
-export async function hostInputBox() {
+export function hostInputBox() {
   return inputBox({
     title: "YApi Host",
     password: false,
@@ -31,8 +31,8 @@ export async function hostInputBox() {
   });
 }
 
-export async function tokenInputBox() {
-  return await inputBox({
+export function tokenInputBox() {
+  return inputBox({
     title: "YApi Project Token",
     password: false,
     ignoreFocusOut: true,
@@ -46,8 +46,8 @@ export async function tokenInputBox() {
   });
 }
 
-export async function titleInputBox() {
-  return await inputBox({
+export function titleInputBox() {
+  return inputBox({
     title: "YApi Project Title",
     password: false,
     ignoreFocusOut: true,

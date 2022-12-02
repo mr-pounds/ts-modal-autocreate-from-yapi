@@ -4,12 +4,12 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:18:00
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-01 14:29:45
+ * @LastEditTime : 2022-12-02 15:46:09
  */
 import axios, { AxiosResponse } from "axios";
 import * as vscode from "vscode";
 
-const yapiRequests = {
+const yapiServices = {
   getApiList(host: string, token: string) {
     const url = host.endsWith("/")
       ? host + "api/interface/list"
@@ -55,4 +55,4 @@ const yapiRequests = {
   },
 };
 
-export default yapiRequests;
+export default yapiServices;
