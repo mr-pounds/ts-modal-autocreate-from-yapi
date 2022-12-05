@@ -4,12 +4,12 @@
  * @Author       : zzz
  * @Date         : 2022-12-01 11:29:34
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 16:38:35
+ * @LastEditTime : 2022-12-05 17:31:46
  */
 import { camelCase } from "../utils";
 import { extractInterface } from "./jsonToInterface";
 
-export function getQueryInterface(apiDetail: IApiDetail, apiTitle: string) {
+export function getQueryInterface(apiDetail: IYapiApiDetail, apiTitle: string) {
   return apiDetail.req_query.length !== 0
     ? {
         name: "I" + camelCase(apiDetail.method) + apiTitle + "Query",
@@ -19,7 +19,7 @@ export function getQueryInterface(apiDetail: IApiDetail, apiTitle: string) {
     : undefined;
 }
 
-export function getFormInterface(apiDetail: IApiDetail, apiTitle: string) {
+export function getFormInterface(apiDetail: IYapiApiDetail, apiTitle: string) {
   if (
     apiDetail.req_body_form.length === 0 &&
     apiDetail.req_body_is_json_schema === false
@@ -67,7 +67,10 @@ export function getFormInterface(apiDetail: IApiDetail, apiTitle: string) {
   return undefined;
 }
 
-export function getResponseInterface(apiDetail: IApiDetail, apiTitle: string) {
+export function getResponseInterface(
+  apiDetail: IYapiApiDetail,
+  apiTitle: string
+) {
   if (apiDetail.res_body !== "") {
     const interfaceName =
       "I" + camelCase(apiDetail.method) + apiTitle + "Response";
@@ -97,7 +100,7 @@ export function getResponseInterface(apiDetail: IApiDetail, apiTitle: string) {
   return undefined;
 }
 
-function getBodyInterface(body: IReqQuery[]) {
+function getBodyInterface(body: IApiReqBodyForm[]) {
   // 生成interface的内容
   let result = "";
   body.forEach((item) => {

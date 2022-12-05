@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:18:00
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 16:24:37
+ * @LastEditTime : 2022-12-05 17:03:23
  */
 import axios, { AxiosResponse } from "axios";
 import * as vscode from "vscode";
@@ -21,7 +21,7 @@ const yapiService = {
       ? host + "api/interface/list"
       : host + "/api/interface/list";
     return axios
-      .get<any, AxiosResponse<IYApiResponse<IApiListResponse>>>(url, {
+      .get<any, AxiosResponse<IYapiResponse<IYapiApiList>>>(url, {
         params: {
           token,
           limit: 1000,
@@ -45,7 +45,7 @@ const yapiService = {
       ? host + "api/interface/get"
       : host + "/api/interface/get";
     return axios
-      .get<any, AxiosResponse<IYApiResponse<IApiDetail>>>(url, {
+      .get<any, AxiosResponse<IYapiResponse<IYapiApiDetail>>>(url, {
         params: {
           token,
           id,

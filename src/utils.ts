@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-02 15:44:13
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 15:51:17
+ * @LastEditTime : 2022-12-05 17:10:33
  */
 import * as vscode from "vscode";
 import { dirname } from "path";
@@ -20,9 +20,9 @@ async function getDir(args: vscode.Uri) {
   });
 }
 
-export async function getWorkFolder(args: any) {
+export function getWorkFolder(args: any) {
   if (args !== undefined) {
-    return await getDir(args);
+    return getDir(args);
   }
 
   const folders = vscode.workspace.workspaceFolders;
@@ -46,7 +46,7 @@ export function createUri(path: string, dir?: string) {
   });
 }
 
-export function getApiTitle(apiDetail: IApiDetail) {
+export function getApiTitle(apiDetail: IYapiApiDetail) {
   let apiTitle = apiDetail.path;
   // 将path中的路径参数干掉
   apiDetail.req_params?.forEach((item) => {

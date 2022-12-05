@@ -1,0 +1,57 @@
+{
+  "errcode": 0,
+  "errmsg": "成功！",
+  "data": {
+    "query_path": {
+      "path": "/form/{id}",
+      "params": []
+    },
+    "edit_uid": 0,
+    "status": "undone",
+    "type": "var",
+    "req_body_is_json_schema": true,
+    "res_body_is_json_schema": true,
+    "api_opened": false,
+    "index": 0,
+    "tag": [],
+    "_id": 69864,
+    "method": "GET",
+    "catid": 10306,
+    "title": "zzz测试get",
+    "path": "/form/{id}",
+    "project_id": 643,
+    "req_params": [
+      {
+        "_id": "6389ac38be46d9187c11eb85",
+        "name": "id",
+        "desc": ""
+      }
+    ],
+    "res_body_type": "json",
+    "uid": 81,
+    "add_time": 1669966811,
+    "up_time": 1669966904,
+    "req_query": [
+      {
+        "required": "1",
+        "_id": "6389ac38be46d9187c11eb87",
+        "name": "org",
+        "desc": ""
+      },
+      {
+        "required": "0",
+        "_id": "6389ac38be46d9187c11eb86",
+        "name": "userId",
+        "example": "",
+        "desc": ""
+      }
+    ],
+    "req_headers": [],
+    "req_body_form": [],
+    "__v": 0,
+    "desc": "",
+    "markdown": "",
+    "res_body": "{\"type\":\"object\",\"title\":\"empty object\",\"properties\":{\"code\":{\"type\":\"string\"},\"success\":{\"type\":\"boolean\"},\"msg\":{\"type\":\"string\"},\"data\":{\"type\":\"object\",\"properties\":{\"total\":{\"type\":\"number\"},\"count\":{\"type\":\"number\"},\"list\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"},\"desc\":{\"type\":\"string\"},\"content\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"title\",\"content\"]}}},\"required\":[\"total\",\"count\",\"list\"]}},\"required\":[\"code\",\"success\",\"msg\",\"data\"]}",
+    "username": "zhengzhizhan"
+  }
+}
