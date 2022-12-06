@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-02 15:44:13
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-05 17:10:33
+ * @LastEditTime : 2022-12-06 15:27:42
  */
 import * as vscode from "vscode";
 import { dirname } from "path";
@@ -46,15 +46,15 @@ export function createUri(path: string, dir?: string) {
   });
 }
 
-export function getApiTitle(apiDetail: IYapiApiDetail) {
-  let apiTitle = apiDetail.path;
+export function getApiTitle(path: string, paramsList: string[]) {
+  let apiPath = path;
   // 将path中的路径参数干掉
-  apiDetail.req_params?.forEach((item) => {
-    apiTitle = apiTitle.replace(paramString(item.name), "");
+  paramsList.forEach((param) => {
+    apiPath = apiPath.replace(paramString(param), "");
   });
 
-  let pathPartList = apiTitle.split("/");
-  apiTitle = "";
+  let pathPartList = apiPath.split("/");
+  let apiTitle = "";
   pathPartList.forEach((item) => {
     // 提取剩余的名称, 去掉数字和斜杠
     let t = item.replace(/\.|\d|\/|\s/g, "");
@@ -64,8 +64,8 @@ export function getApiTitle(apiDetail: IYapiApiDetail) {
   });
 
   // 然后再根据path+路径参数确定类型名称
-  apiDetail.req_params.forEach((item) => {
-    apiTitle += "By" + camelCase(item.name);
+  paramsList.forEach((param) => {
+    apiTitle += "By" + camelCase(param);
   });
   return apiTitle;
 }

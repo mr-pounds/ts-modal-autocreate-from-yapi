@@ -4,18 +4,15 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:13:29
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-05 16:41:17
+ * @LastEditTime : 2022-12-06 15:58:53
  */
 
 import * as vscode from "vscode";
 import { chooseYApiProject, chooseApis } from "./popup";
 import { getWorkFolder, createUri, getApiTitle } from "./utils";
 import yapiService from "./yapi";
-import {
-  getQueryInterface,
-  getFormInterface,
-  getResponseInterface,
-} from "./parser/queryInterface";
+import { parseToJson } from "./parser/parsetToJson";
+import { parseToInterface } from "./parser/parseToInterface";
 import { writeInterfaceToFile } from "./writer/writeInterfaceToFile";
 
 export async function controller(args: any) {
@@ -36,22 +33,22 @@ export async function controller(args: any) {
     vscode.window.showErrorMessage("Output Dir doesn't exist!");
     return;
   }
-  // 公共模型
+  // 公共模型文件的 uri
   const publicInterfaceUri = createUri(
     "publicInterface.types.ts",
     targetDir["fsPath"]
   );
-  // 请求参数模型
+  // 请求参数模型文件的 uri
   const inputBoInterfaceUri = createUri(
     "inputBoInterface.types.ts",
     targetDir["fsPath"]
   );
-  // 响应参数模型
+  // 响应参数模型文件的 uri
   const outputVoInterfaceUri = createUri(
     "outputVoInterface.types.ts",
     targetDir["fsPath"]
   );
-  // 接口文件
+  // 接口文件文件的 uri
   const serviceUri = createUri("services.ts", targetDir["fsPath"]);
 
   // 开始在后端执行
@@ -69,82 +66,37 @@ export async function controller(args: any) {
           message: "start to update interface...",
         });
 
-        // 查询用户选择的接口
-        let apiDetailList = [];
-        choosedAPiList?.forEach((api, index) => {
-          yapiService.getApiDetail(host, token, api._id).then((data) => {
-            if (data !== undefined) {
-              apiDetailList.push(data);
-            }
-          });
+        // 查询用户选择的接口,并将其全部转变为 json
+        let apiDetailList: IApiInfo[] = new Array();
+        for (var i = 0; i < choosedAPiList!.length; i++) {
+          await yapiService
+            .getApiDetail(host, token, choosedAPiList![i]._id)
+            .then((data) => {
+              if (data !== undefined) {
+                apiDetailList.push(parseToJson(data));
+                console.log(apiDetailList);
+                return;
+              } else {
+                vscode.window.showErrorMessage(
+                  `can not fetch ${choosedAPiList![i].title} data`
+                );
+                return;
+              }
+            });
+        }
+        // 根据 Json 抽取每个接口包含的 interface
+        apiDetailList.forEach((item) => {
+          parseToInterface(item);
         });
-
-        // 将接口数据解析成objectList
-        // 将objectList输出到文件中，要支持更新模型
-
-        choosedAPiList?.forEach(async (api, index) => {
-          // 获取接口数据
-          const apiDetail = await yapiService.getApiDetail(
-            host,
-            token,
-            api._id
-          );
-          if (apiDetail === undefined) {
-            resolve(null);
-          }
-          // 先确定各类型的基本名称
-          const apiBaseTitle = getApiTitle(apiDetail!);
-          // 生成接口请求参数的模型并返回 {name, content}
-          const queryInterface = getQueryInterface(apiDetail!, apiBaseTitle);
-          // console.log("queryInterface", queryInterface);
-          // 生成接口请求参数的模型并返回 {name, content}
-          const formInterface = getFormInterface(apiDetail!, apiBaseTitle);
-          const formInterfaceName = formInterface?.name;
-          const formInterfaceList = formInterface?.list;
-          // console.log("formInterface", formInterface);
-          const responseInterface = getResponseInterface(
-            apiDetail!,
-            apiBaseTitle
-          );
-          const responseInterfaceName = responseInterface?.name;
-          const responseInterfaceList = responseInterface?.list;
-          // console.log("responseInterface", responseInterface);
-
-          // 生成公共模型并返回
-          formInterfaceList?.forEach(async (item) => {
-            if (item.isPublic) {
-              await writeInterfaceToFile(publicInterfaceUri, item);
-            }
-          });
-          responseInterfaceList?.forEach(async (item) => {
-            if (item.isPublic) {
-              await writeInterfaceToFile(publicInterfaceUri, item);
-            }
-          });
-
-          // 生成请求参数模型
-          await writeInterfaceToFile(inputBoInterfaceUri, queryInterface!);
-          formInterfaceList?.forEach(async (item) => {
-            if (!item.isPublic) {
-              await writeInterfaceToFile(inputBoInterfaceUri, item);
-            }
-          });
-
-          // 生成响应参数的模型并返回
-          responseInterfaceList?.forEach(async (item) => {
-            if (!item.isPublic) {
-              await writeInterfaceToFile(outputVoInterfaceUri, item);
-            }
-          });
-
-          // 生成接口
-          progress.report({
-            increment: (index / choosedAPiList.length) * 70,
-            message: `正在创建${api.title}相关模型及接口`,
-          });
-          resolve(null);
-        });
+        // progress.report({
+        //   increment: (index / choosedAPiList.length) * 70,
+        //   message: `正在创建${api.title}相关模型及接口`,
+        // });
+        resolve(null);
+        // 生成公共模型并返回
       });
     }
   );
 }
+
+function getAllApiDetail(choosedAPiList: IYapiApiBaseInfo[]) {}

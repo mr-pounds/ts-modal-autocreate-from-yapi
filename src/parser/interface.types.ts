@@ -4,39 +4,18 @@
  * @Author       : zzz
  * @Date         : 2022-12-01 14:37:43
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-05 17:28:42
+ * @LastEditTime : 2022-12-06 15:17:33
  */
 
-//  old interface: wait to delete
-interface interfaceStruct {
-  name: string;
-  isPublic: boolean;
-  fields?: IField[];
-}
-
-interface IField {
-  name: string;
-  type: string;
-  isRequired: boolean;
-}
-
-interface IInterfaceResult {
-  name: string;
-  isPublic?: boolean;
-  content: string;
-}
-
-// new interface
-
-interface IApiBaseInfo {
+interface IApiInfo {
   title: string;
   path: string;
   method: string;
   params: IApiReqParams[];
   query: IApiReqQuery[];
   bodyIsJson: boolean;
-  body?: IApiReqBodyForm[];
-  response: string[];
+  body?: IApiReqBodyForm[] | IApiJsonObject;
+  response: IApiJsonObject[];
 }
 
 interface IApiReqParams {
@@ -63,15 +42,8 @@ interface IApiReqBodyForm {
 }
 
 interface IApiJsonObject {
-  isPublic: boolean;
-  // interface name
-  name: string;
-  properties: IApiJsonField[];
-}
-
-interface IApiJsonField {
-  name: string;
+  required: string[];
+  title: string;
   type: string;
-  required: string;
-  desc?: string;
+  properties: any;
 }

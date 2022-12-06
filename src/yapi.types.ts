@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-30 15:27:13
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-05 17:18:06
+ * @LastEditTime : 2022-12-06 15:14:10
  */
 
 interface IYapiResponse<T> {
@@ -60,6 +60,7 @@ interface IYapiApiDetail {
   __v: number;
   desc: string;
   markdown: string;
+  req_body_type: string;
   // 可以转成 json 对象
   req_body_other?: string;
   res_body_type: string;

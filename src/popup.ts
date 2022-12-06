@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 21:10:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 16:34:44
+ * @LastEditTime : 2022-12-06 15:28:56
  */
 import * as vscode from "vscode";
 import { configuration } from "./utils";
@@ -114,7 +114,7 @@ export async function chooseApis(host: string, token: string) {
   }
 
   // 匹配选中的接口
-  const choosedAPiList: IApi[] = [];
+  const choosedAPiList: IYapiApiBaseInfo[] = [];
   apiList?.forEach((item) => {
     if (choosedList?.includes(item.title)) {
       choosedAPiList.push(item);
