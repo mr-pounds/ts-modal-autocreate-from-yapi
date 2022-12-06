@@ -1,3 +1,4 @@
+import { stringify } from "querystring";
 import { camelCase } from "../utils";
 
 /*
@@ -6,136 +7,105 @@ import { camelCase } from "../utils";
  * @Author       : zzz
  * @Date         : 2022-12-01 14:34:50
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 16:38:30
+ * @LastEditTime : 2022-12-06 21:31:21
  */
-
-interface IextractInterfaceResult {
-  newTypeName: string;
-  list: interfaceStruct[];
+interface IjsonToInterfaceResponse {
+  current: IinterfaceStruct;
+  denpend: IinterfaceStruct[];
 }
 
-export function extractInterface(
-  target: any,
-  name: string,
-  level: number = 0
-): IextractInterfaceResult {
-  //   name 由上层传递， type、required、properties 是关键属性
-  let newInterfaceList: interfaceStruct[] = [];
-  let fields: IField[] = [];
-  // 如果对象类型不是有明确意义的object或array，直接返回空列
+interface Icontent {
+  type: string;
+  required: string[];
+  properties: any;
+  desc?: string;
+}
 
-  if (target.type === "object") {
-    for (const field in target.properties) {
-      if (
-        target.properties[field]["type"] === "object" &&
-        Object.keys(target.properties[field]["properties"].length === 0)
-      ) {
-        fields.push({
-          name: field,
-          type: "null",
-          isRequired:
-            target["required"] !== undefined
-              ? field in target["required"]
-              : false,
-        });
-      }
-      if (
-        target.properties[field]["type"] === "object" &&
-        Object.keys(target.properties[field]["properties"].length !== 0)
-      ) {
-        let result = extractInterface(
-          target.properties[field],
-          name + camelCase(field),
+// 只接受 object 结构
+export function jsonToInterface(
+  interfaceName: string,
+  content: Icontent,
+  level: number = 0
+): IjsonToInterfaceResponse {
+  let fields: IinterfaceField[] = [];
+  let denpend: IinterfaceStruct[] = [];
+  for (var key in content.properties) {
+    switch (content.properties[key]["type"]) {
+      case "object":
+        const t = jsonToInterface(
+          interfaceName + camelCase(key),
+          content.properties[key],
           level + 1
         );
         fields.push({
-          name: field,
-          type: result.newTypeName,
-          isRequired:
-            target["required"] !== undefined
-              ? field in target["required"]
-              : false,
+          name: key,
+          type: t.current.name,
+          required: key in content.required,
+          desc: content.properties[key]["desc"],
         });
-        newInterfaceList = newInterfaceList.concat(result.list);
-        continue;
-      }
-
-      if (target.properties[field]["type"] === "array") {
-        // 不是的话,直接返回 field
-        // 判断 items.type 是不是 array 或者 object
-        if (
-          target.properties[field]["items"]["type"] === "array" ||
-          target.properties[field]["items"]["type"] === "object"
-        ) {
-          let result = extractInterface(
-            target.properties[field],
-            name + camelCase(field),
-            level + 1
-          );
-          fields.push({
-            name: field,
-            type: result.newTypeName + "[]",
-            isRequired:
-              target["required"] !== undefined
-                ? field in target["required"]
-                : false,
-          });
-          newInterfaceList = newInterfaceList.concat(result.list);
-        } else {
-          fields.push({
-            name: field,
-            type: target.properties[field]["items"]["type"] + "[]",
-            isRequired:
-              target["required"] !== undefined
-                ? field in target["required"]
-                : false,
-          });
-        }
-        continue;
-      }
-      // field type isn't object or array
-      fields.push({
-        name: field,
-        type: target.properties[field]["type"],
-        isRequired:
-          target["required"] !== undefined
-            ? field in target["required"]
-            : false,
-      });
-    }
-    newInterfaceList.push({
-      name: name,
-      fields,
-      isPublic: level > 1,
-    });
-  }
-
-  if (target.type === "array") {
-    if (
-      target["items"]["type"] === "array" ||
-      target["items"]["type"] === "object"
-    ) {
-      let result = extractInterface(target["items"], name, level + 1);
-      fields.push({
-        name: name,
-        type: result.newTypeName + "[]",
-        isRequired: false,
-      });
-      newInterfaceList = newInterfaceList.concat(result.list);
-    } else {
-      fields.push({
-        name: name,
-        type: target["items"]["type"] + "[]",
-        isRequired: false,
-      });
+        denpend.push(...t.denpend);
+        break;
+      case "array":
+        const arrayResult = arrayInterface(
+          interfaceName + camelCase(key),
+          content.properties[key]
+        );
+        fields.push({
+          name: key,
+          type: arrayResult.type,
+          required: key in content.required,
+          desc: content.properties[key]["desc"],
+        });
+        denpend.push(...arrayResult.depend);
+        break;
+      default:
+        fields.push({
+          name: key,
+          type: dataType(content.properties[key]["type"]),
+          required: key in content.required,
+          desc: content.properties[key]["desc"],
+        });
     }
   }
+  let current = {
+    name: interfaceName,
+    fields,
+  };
+  denpend.push(current);
   return {
-    newTypeName: name,
-    list: newInterfaceList,
+    current,
+    denpend,
   };
 }
 
-function dataType(t: string): string {
-  return t === "integer" ? "number" : t;
+function arrayInterface(
+  name: string,
+  content: any
+): {
+  type: string;
+  depend: IinterfaceStruct[];
+} {
+  let depend = [];
+  let type = "";
+  switch (content.items.type) {
+    case "object":
+      const objectResult = jsonToInterface(name, content.items);
+      type = objectResult.current.name + "[]";
+      depend.push(...objectResult.denpend);
+      break;
+    case "array":
+      const arrayResult = arrayInterface(name, content.items);
+      type = arrayResult.type + "[]";
+      depend.push(...arrayResult.depend);
+    default:
+      type = content.items.type + "[]";
+  }
+  return {
+    type,
+    depend,
+  };
+}
+
+function dataType(type: string) {
+  return type === "integer" ? "number" : type;
 }

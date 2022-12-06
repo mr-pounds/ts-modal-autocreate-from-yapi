@@ -4,14 +4,14 @@
  * @Author       : zzz
  * @Date         : 2022-12-02 13:45:41
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 14:56:08
+ * @LastEditTime : 2022-12-06 21:32:16
  */
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
 
 export async function writeInterfaceToFile(
   path: vscode.Uri,
-  aInterface: IInterfaceResult
+  aInterface: IinterfaceStruct
 ) {
   if (aInterface === undefined) {
     return;
@@ -35,8 +35,8 @@ export async function writeInterfaceToFile(
   await vscode.workspace.fs.writeFile(path, uint8array);
 }
 
-function getInterfaceString(aInterface: IInterfaceResult) {
-  return (
-    "export interface " + aInterface.name + " {\n" + aInterface.content + "}\n"
-  );
+function getInterfaceString(aInterface: IinterfaceStruct) {
+  // return (
+  //   "export interface " + aInterface.name + " {\n" + aInterface.content + "}\n"
+  // );
 }

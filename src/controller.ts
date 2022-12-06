@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:13:29
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-06 15:58:53
+ * @LastEditTime : 2022-12-06 19:52:40
  */
 
 import * as vscode from "vscode";
@@ -74,7 +74,6 @@ export async function controller(args: any) {
             .then((data) => {
               if (data !== undefined) {
                 apiDetailList.push(parseToJson(data));
-                console.log(apiDetailList);
                 return;
               } else {
                 vscode.window.showErrorMessage(

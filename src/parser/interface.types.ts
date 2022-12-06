@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-01 14:37:43
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-06 15:17:33
+ * @LastEditTime : 2022-12-06 20:19:14
  */
 
 interface IApiInfo {
@@ -14,7 +14,8 @@ interface IApiInfo {
   params: IApiReqParams[];
   query: IApiReqQuery[];
   bodyIsJson: boolean;
-  body?: IApiReqBodyForm[] | IApiJsonObject;
+  bodyForm?: IApiReqBodyForm[];
+  bodyJson?: IApiJsonObject;
   response: IApiJsonObject[];
 }
 
@@ -46,4 +47,17 @@ interface IApiJsonObject {
   title: string;
   type: string;
   properties: any;
+}
+
+interface IinterfaceStruct {
+  name: string;
+  fields: IinterfaceField[];
+}
+
+interface IinterfaceField {
+  name: string;
+  type: string;
+  required: boolean;
+  desc?: string;
+  example?: string;
 }
