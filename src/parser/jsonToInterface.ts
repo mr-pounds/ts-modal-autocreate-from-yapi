@@ -7,7 +7,7 @@ import { camelCase } from "../utils";
  * @Author       : zzz
  * @Date         : 2022-12-01 14:34:50
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-06 21:31:21
+ * @LastEditTime : 2022-12-07 11:07:57
  */
 interface IjsonToInterfaceResponse {
   current: IinterfaceStruct;
@@ -48,7 +48,8 @@ export function jsonToInterface(
       case "array":
         const arrayResult = arrayInterface(
           interfaceName + camelCase(key),
-          content.properties[key]
+          content.properties[key],
+          level
         );
         fields.push({
           name: key,
@@ -69,6 +70,7 @@ export function jsonToInterface(
   }
   let current = {
     name: interfaceName,
+    isPublic: level > 1,
     fields,
   };
   denpend.push(current);
@@ -80,7 +82,8 @@ export function jsonToInterface(
 
 function arrayInterface(
   name: string,
-  content: any
+  content: any,
+  level: number = 0
 ): {
   type: string;
   depend: IinterfaceStruct[];
@@ -89,7 +92,7 @@ function arrayInterface(
   let type = "";
   switch (content.items.type) {
     case "object":
-      const objectResult = jsonToInterface(name, content.items);
+      const objectResult = jsonToInterface(name, content.items, level + 1);
       type = objectResult.current.name + "[]";
       depend.push(...objectResult.denpend);
       break;
@@ -107,5 +110,16 @@ function arrayInterface(
 }
 
 function dataType(type: string) {
-  return type === "integer" ? "number" : type;
+  switch (type) {
+    case "integer":
+      return "number";
+    case "text":
+      return "string";
+    case null:
+      return "any";
+    case undefined:
+      return "any";
+    default:
+      return type;
+  }
 }

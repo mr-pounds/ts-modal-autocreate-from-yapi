@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-01 14:37:43
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-06 20:19:14
+ * @LastEditTime : 2022-12-07 10:21:18
  */
 
 interface IApiInfo {
@@ -16,7 +16,7 @@ interface IApiInfo {
   bodyIsJson: boolean;
   bodyForm?: IApiReqBodyForm[];
   bodyJson?: IApiJsonObject;
-  response: IApiJsonObject[];
+  response: IApiJsonObject;
 }
 
 interface IApiReqParams {
@@ -51,6 +51,7 @@ interface IApiJsonObject {
 
 interface IinterfaceStruct {
   name: string;
+  isPublic: boolean;
   fields: IinterfaceField[];
 }
 

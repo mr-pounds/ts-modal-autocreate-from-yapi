@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:13:29
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-06 19:52:40
+ * @LastEditTime : 2022-12-07 11:12:57
  */
 
 import * as vscode from "vscode";
@@ -82,17 +82,99 @@ export async function controller(args: any) {
                 return;
               }
             });
+          progress.report({
+            increment: (i / choosedAPiList!.length) * 40,
+            message: `正在抓取 yapi 的数据`,
+          });
         }
+
         // 根据 Json 抽取每个接口包含的 interface
-        apiDetailList.forEach((item) => {
-          parseToInterface(item);
+        progress.report({
+          increment: 45,
+          message: `正在解析 yapi 的数据`,
         });
-        // progress.report({
-        //   increment: (index / choosedAPiList.length) * 70,
-        //   message: `正在创建${api.title}相关模型及接口`,
-        // });
+        let apiDetailStructList = apiDetailList.map((item) => {
+          return parseToInterface(item);
+        });
+        progress.report({
+          increment: 60,
+          message: `yapi 的数据解析完成`,
+        });
+
+        // 开始生成公共模型
+        progress.report({
+          increment: 65,
+          message: `正在生成公共模型`,
+        });
+        let publicInterfaceList: IinterfaceStruct[] = [];
+        apiDetailStructList.forEach((aApiDetailStruct) => {
+          aApiDetailStruct.apiBodyJsonDepend.forEach((aItem) => {
+            if (aItem.isPublic) {
+              publicInterfaceList.push(aItem);
+            }
+          });
+          aApiDetailStruct.apiResponseDepend.forEach((aItem) => {
+            if (aItem.isPublic) {
+              publicInterfaceList.push(aItem);
+            }
+          });
+        });
+        await writeInterfaceToFile(publicInterfaceUri, publicInterfaceList);
+
+        progress.report({
+          increment: 70,
+          message: `正在生成输入参数的模型`,
+        });
+        let inputBoInterfaceList: IinterfaceStruct[] = [];
+        let inputBoDependPublicInterfaceList: string[] = [];
+        apiDetailStructList.forEach((aApiDetailStruct) => {
+          if (aApiDetailStruct.apiQuery !== undefined) {
+            inputBoInterfaceList.push(aApiDetailStruct.apiQuery);
+          }
+          if (aApiDetailStruct.apiBodyForm !== undefined) {
+            inputBoInterfaceList.push(aApiDetailStruct.apiBodyForm);
+          }
+          aApiDetailStruct.apiBodyJsonDepend.forEach((aItem) => {
+            if (!aItem.isPublic) {
+              inputBoInterfaceList.push(aItem);
+            } else {
+              inputBoDependPublicInterfaceList.push(aItem.name);
+            }
+          });
+        });
+        await writeInterfaceToFile(
+          inputBoInterfaceUri,
+          inputBoInterfaceList,
+          inputBoDependPublicInterfaceList
+        );
+
+        progress.report({
+          increment: 80,
+          message: `正在生成输出参数的模型`,
+        });
+        let outputVoInterfaceList: IinterfaceStruct[] = [];
+        let outputVoDependPublicInterfaceList: string[] = [];
+        apiDetailStructList.forEach((aApiDetailStruct) => {
+          aApiDetailStruct.apiResponseDepend.forEach((aItem) => {
+            if (!aItem.isPublic) {
+              outputVoInterfaceList.push(aItem);
+            } else {
+              outputVoDependPublicInterfaceList.push(aItem.name);
+            }
+          });
+        });
+        await writeInterfaceToFile(
+          outputVoInterfaceUri,
+          outputVoInterfaceList,
+          outputVoDependPublicInterfaceList
+        );
+
+        progress.report({
+          increment: 90,
+          message: `正在生成service文件`,
+        });
+
         resolve(null);
-        // 生成公共模型并返回
       });
     }
   );
