@@ -1,5 +1,4 @@
-import { stringify } from "querystring";
-import { camelCase } from "../utils";
+import { camelCase, dataType } from "../utils";
 
 /*
  * @Name         :
@@ -7,7 +6,7 @@ import { camelCase } from "../utils";
  * @Author       : zzz
  * @Date         : 2022-12-01 14:34:50
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 11:07:57
+ * @LastEditTime : 2022-12-07 14:52:48
  */
 interface IjsonToInterfaceResponse {
   current: IinterfaceStruct;
@@ -107,19 +106,4 @@ function arrayInterface(
     type,
     depend,
   };
-}
-
-function dataType(type: string) {
-  switch (type) {
-    case "integer":
-      return "number";
-    case "text":
-      return "string";
-    case null:
-      return "any";
-    case undefined:
-      return "any";
-    default:
-      return type;
-  }
 }

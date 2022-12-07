@@ -4,12 +4,25 @@
  * @Author       : zzz
  * @Date         : 2022-12-01 11:29:34
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 10:54:08
+ * @LastEditTime : 2022-12-07 17:24:45
  */
-import { getApiTitle } from "../utils";
+import { getApiTitle, dataType } from "../utils";
 import { jsonToInterface } from "./jsonToInterface";
 
-export function parseToInterface(apiInfo: IApiInfo) {
+export interface IparseToInterfaceResponse {
+  apiTitle: string;
+  method: string;
+  path: string;
+  apiParams?: IApiReqParams[];
+  apiQuery?: IinterfaceStruct;
+  apiBodyForm?: IinterfaceStruct;
+  apiBodyJsonInterface?: string;
+  apiBodyJsonDepend?: IinterfaceStruct[];
+  apiResponseInterface?: string;
+  apiResponseDepend?: IinterfaceStruct[];
+}
+
+export function parseToInterface(apiInfo: IApiInfo): IparseToInterfaceResponse {
   // 生成 api 的基本名称，用于后续的拼接;
   const apiBaseTitle = getApiTitle(
     apiInfo.path,
@@ -46,7 +59,7 @@ export function parseToInterface(apiInfo: IApiInfo) {
             return {
               required: item.required === "1",
               name: item.name,
-              type: item.type,
+              type: dataType(item.type),
               desc: item.desc,
               example: item.example,
             };

@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-02 15:44:13
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-06 15:27:42
+ * @LastEditTime : 2022-12-07 14:52:12
  */
 import * as vscode from "vscode";
 import { dirname } from "path";
@@ -106,3 +106,18 @@ export const configuration = {
       .update("ts-modal-autocreate-from-yapi.yapiProjectTokenList", items);
   },
 };
+
+export function dataType(type: string) {
+  switch (type) {
+    case "integer":
+      return "number";
+    case "text":
+      return "string";
+    case null:
+      return "any";
+    case undefined:
+      return "any";
+    default:
+      return type;
+  }
+}

@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-06 14:51:06
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-06 19:52:46
+ * @LastEditTime : 2022-12-07 17:06:59
  */
 export function parseToJson(content: IYapiApiDetail): IApiInfo {
   return {
@@ -16,7 +16,7 @@ export function parseToJson(content: IYapiApiDetail): IApiInfo {
     bodyIsJson: content.req_body_type === "json",
     bodyForm: content.req_body_form,
     bodyJson: _parse(content.req_body_other!),
-    response: _parse(content.res_body),
+    response: _parse(content.res_body).properties.data,
   };
 }
 

@@ -4,16 +4,17 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:13:29
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 11:12:57
+ * @LastEditTime : 2022-12-07 17:38:29
  */
 
 import * as vscode from "vscode";
 import { chooseYApiProject, chooseApis } from "./popup";
-import { getWorkFolder, createUri, getApiTitle } from "./utils";
+import { getWorkFolder, createUri } from "./utils";
 import yapiService from "./yapi";
 import { parseToJson } from "./parser/parsetToJson";
 import { parseToInterface } from "./parser/parseToInterface";
 import { writeInterfaceToFile } from "./writer/writeInterfaceToFile";
+import { writerApiToFile } from "./writer/writeApiToFile";
 
 export async function controller(args: any) {
   // 获取用户选择 yapi 的项目
@@ -25,6 +26,9 @@ export async function controller(args: any) {
 
   // 获取用户选择的接口
   const choosedAPiList = await chooseApis(host, token);
+  if (choosedAPiList === undefined) {
+    return;
+  }
 
   //  判断在哪个路径生成文件
   // 如果 args 是 undefined，则生成到项目的根目录下，如果根目录不存在，就报错终止执行
@@ -34,18 +38,15 @@ export async function controller(args: any) {
     return;
   }
   // 公共模型文件的 uri
-  const publicInterfaceUri = createUri(
-    "publicInterface.types.ts",
-    targetDir["fsPath"]
-  );
+  const publicInterfaceUri = createUri("public.types.ts", targetDir["fsPath"]);
   // 请求参数模型文件的 uri
   const inputBoInterfaceUri = createUri(
-    "inputBoInterface.types.ts",
+    "inputBo.types.ts",
     targetDir["fsPath"]
   );
   // 响应参数模型文件的 uri
   const outputVoInterfaceUri = createUri(
-    "outputVoInterface.types.ts",
+    "outputVo.types.ts",
     targetDir["fsPath"]
   );
   // 接口文件文件的 uri
@@ -108,12 +109,12 @@ export async function controller(args: any) {
         });
         let publicInterfaceList: IinterfaceStruct[] = [];
         apiDetailStructList.forEach((aApiDetailStruct) => {
-          aApiDetailStruct.apiBodyJsonDepend.forEach((aItem) => {
+          aApiDetailStruct.apiBodyJsonDepend?.forEach((aItem) => {
             if (aItem.isPublic) {
               publicInterfaceList.push(aItem);
             }
           });
-          aApiDetailStruct.apiResponseDepend.forEach((aItem) => {
+          aApiDetailStruct.apiResponseDepend?.forEach((aItem) => {
             if (aItem.isPublic) {
               publicInterfaceList.push(aItem);
             }
@@ -134,7 +135,7 @@ export async function controller(args: any) {
           if (aApiDetailStruct.apiBodyForm !== undefined) {
             inputBoInterfaceList.push(aApiDetailStruct.apiBodyForm);
           }
-          aApiDetailStruct.apiBodyJsonDepend.forEach((aItem) => {
+          aApiDetailStruct.apiBodyJsonDepend?.forEach((aItem) => {
             if (!aItem.isPublic) {
               inputBoInterfaceList.push(aItem);
             } else {
@@ -155,7 +156,7 @@ export async function controller(args: any) {
         let outputVoInterfaceList: IinterfaceStruct[] = [];
         let outputVoDependPublicInterfaceList: string[] = [];
         apiDetailStructList.forEach((aApiDetailStruct) => {
-          aApiDetailStruct.apiResponseDepend.forEach((aItem) => {
+          aApiDetailStruct.apiResponseDepend?.forEach((aItem) => {
             if (!aItem.isPublic) {
               outputVoInterfaceList.push(aItem);
             } else {
@@ -173,11 +174,9 @@ export async function controller(args: any) {
           increment: 90,
           message: `正在生成service文件`,
         });
-
+        await writerApiToFile(serviceUri, apiDetailStructList);
         resolve(null);
       });
     }
   );
 }
-
-function getAllApiDetail(choosedAPiList: IYapiApiBaseInfo[]) {}

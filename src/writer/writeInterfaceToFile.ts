@@ -4,10 +4,11 @@
  * @Author       : zzz
  * @Date         : 2022-12-02 13:45:41
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 11:17:49
+ * @LastEditTime : 2022-12-07 17:38:39
  */
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
+import { fileToList } from "./fileToList";
 
 export async function writeInterfaceToFile(
   path: vscode.Uri,
@@ -25,10 +26,23 @@ export async function writeInterfaceToFile(
   );
   let newContent = "";
   if (fileContent !== undefined) {
-    // todo 更新先欠着
-    newContent = fileContent;
+    let contentList = fileToList(fileContent);
+    // console.log(contentList);
     interfaceList.forEach((aInterface) => {
-      newContent += getInterfaceString(aInterface);
+      let targetIndex = -1;
+      contentList.forEach((item, index) => {
+        if (item[0] === aInterface.name) {
+          targetIndex = index;
+        }
+      });
+      if (targetIndex !== -1) {
+        contentList[targetIndex][1] = getInterfaceString(aInterface);
+      } else {
+        contentList.push([aInterface.name, getInterfaceString(aInterface)]);
+      }
+    });
+    contentList.forEach((t) => {
+      newContent += t[1];
     });
   } else {
     newContent += getImportString(dependPublicInterfaceList);
@@ -49,7 +63,7 @@ function getImportString(dependList: string[]) {
   dependList.forEach((item) => {
     result += item;
   });
-  result += ' } from "./publicInterface.types";\n';
+  result += ' } from "./public.types";\n\n';
   return result;
 }
 
@@ -58,7 +72,7 @@ function getInterfaceString(aInterface: IinterfaceStruct) {
   aInterface.fields.forEach((aField) => {
     if (stringIsValid(aField.desc) && stringIsValid(aField.example)) {
       result +=
-        "    // " +
+        "  // " +
         aField.name +
         ": " +
         aField.desc +
@@ -68,21 +82,21 @@ function getInterfaceString(aInterface: IinterfaceStruct) {
     }
 
     if (!stringIsValid(aField.desc) && stringIsValid(aField.example)) {
-      result += "    // Like " + aField.example + "\n";
+      result += "  // Like " + aField.example + "\n";
     }
 
     if (stringIsValid(aField.desc) && !stringIsValid(aField.example)) {
-      result += "    // " + aField.name + ": " + aField.desc + "\n";
+      result += "  // " + aField.name + ": " + aField.desc + "\n";
     }
     result +=
-      "    " +
+      "  " +
       aField.name +
       isRequired(aField.required) +
       ": " +
       aField.type +
       ";\n";
   });
-  result += "}\n";
+  result += "}\n\n";
   return result;
 }
 
