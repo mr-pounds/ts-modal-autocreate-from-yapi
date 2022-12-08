@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 14:58:13
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 15:42:23
+ * @LastEditTime : 2022-12-08 15:13:09
  */
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
@@ -26,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
       // The code you place here will be executed every time your command is executed
       // Display a message box to the user
       controller(args);
+      return;
     }
   );
 

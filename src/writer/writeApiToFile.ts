@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-07 17:14:58
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 21:41:13
+ * @LastEditTime : 2022-12-08 15:22:28
  */
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
@@ -53,7 +53,15 @@ export async function writerApiToFile(
     newContent += getApiContent(apiList);
   }
   var uint8array = new TextEncoder().encode(newContent);
-  await vscode.workspace.fs.writeFile(path, uint8array);
+  await vscode.workspace.fs.writeFile(path, uint8array).then(
+    () => {
+      return;
+    },
+    (err) => {
+      vscode.window.showErrorMessage(err);
+    }
+  );
+  return;
 }
 
 function getImportContent(apiList: IparseToInterfaceResponse[]) {
@@ -81,10 +89,10 @@ function getImportContent(apiList: IparseToInterfaceResponse[]) {
 
 function getImportString(file: string, list: string[]) {
   let result = "";
-  if (list.length > 3) {
+  if (list.length > 2) {
     result += "import {\n";
     list.forEach((t) => {
-      result += t + ",\n";
+      result += "  " + t + ",\n";
     });
     result += '} from "' + file + '";\n';
   } else {
@@ -103,7 +111,7 @@ function getApiContent(apiList: IparseToInterfaceResponse[]) {
     // 写入函数头
     result += "  " + aItem.apiTitle + "(";
     result += getFunctionParams(aItem);
-    result += "){\n";
+    result += "  ) {\n";
     // 写入函数体
     // 先构建url
     result += "    const url = `" + aItem.path.replace("{", "${") + "`;\n";
@@ -120,12 +128,13 @@ function getApiContent(apiList: IparseToInterfaceResponse[]) {
       aItem.apiBodyJsonInterface === undefined
     ) {
       result +=
-        "data, " + '{\n"Content-Type": "application/x-www-form-urlencoded"\n},';
+        "data, " +
+        '{\n      "Content-Type": "application/x-www-form-urlencoded"\n    }';
     }
     if (aItem.apiBodyJsonInterface !== undefined) {
-      result += "data,";
+      result += "data";
     }
-    result += ")\n},\n\n";
+    result += ");\n  },\n\n";
   });
   result += "}\n";
   return result;
@@ -138,9 +147,9 @@ function getFunctionParams(aItem: IparseToInterfaceResponse) {
   paramNum += aItem.apiBodyJsonInterface !== undefined ? 1 : 0;
   paramNum += aItem.apiResponseInterface !== undefined ? 1 : 0;
 
-  let suffixString = paramNum >= 3 ? "\n" : " ";
-  let prefixString = paramNum >= 3 ? "    " : "";
-  let result = paramNum >= 3 ? "\n" : "";
+  let suffixString = paramNum >= 2 ? "\n" : " ";
+  let prefixString = paramNum >= 2 ? "    " : "";
+  let result = paramNum >= 2 ? "\n" : "";
   if (aItem.apiParams?.length !== 0) {
     aItem.apiParams?.forEach((item) => {
       result += prefixString + item.name + ": string," + suffixString;

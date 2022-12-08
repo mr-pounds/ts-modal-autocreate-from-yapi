@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-02 13:45:41
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 17:38:39
+ * @LastEditTime : 2022-12-08 15:20:07
  */
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
@@ -52,7 +52,15 @@ export async function writeInterfaceToFile(
     });
   }
   var uint8array = new TextEncoder().encode(newContent);
-  await vscode.workspace.fs.writeFile(path, uint8array);
+  await vscode.workspace.fs.writeFile(path, uint8array).then(
+    () => {
+      return;
+    },
+    (err) => {
+      vscode.window.showErrorMessage(err);
+    }
+  );
+  return;
 }
 
 function getImportString(dependList: string[]) {

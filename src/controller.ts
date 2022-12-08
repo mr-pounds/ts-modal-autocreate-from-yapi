@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:13:29
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 17:38:29
+ * @LastEditTime : 2022-12-08 15:11:35
  */
 
 import * as vscode from "vscode";
@@ -179,4 +179,5 @@ export async function controller(args: any) {
       });
     }
   );
+  return;
 }
