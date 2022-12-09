@@ -4,11 +4,15 @@
  * @Author       : zzz
  * @Date         : 2022-12-07 17:14:58
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-08 15:22:28
+ * @LastEditTime : 2022-12-09 14:53:07
  */
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
-import { fileToList } from "./fileToList";
+import {
+  fileToCodeBlock,
+  updateImport,
+  updateService,
+} from "./serviceFileCodeBlock";
 import { IparseToInterfaceResponse } from "../parser/parseToInterface";
 
 export async function writerApiToFile(
@@ -27,30 +31,20 @@ export async function writerApiToFile(
   );
   let newContent = "";
   if (fileContent !== undefined) {
-    // 如果文件已存在 TODO
-    let contentList = fileToList(fileContent);
-    // console.log(contentList);
-    // interfaceList.forEach((aInterface) => {
-    //   let targetIndex = -1;
-    //   contentList.forEach((item, index) => {
-    //     if (item[0] === aInterface.name) {
-    //       targetIndex = index;
-    //     }
-    //   });
-    //   if (targetIndex !== -1) {
-    //     contentList[targetIndex][1] = getInterfaceString(aInterface);
-    //   } else {
-    //     contentList.push([aInterface.name, getInterfaceString(aInterface)]);
-    //   }
-    // });
-    // contentList.forEach((t) => {
-    //   newContent += t[1];
-    // });
+    let contentList = fileToCodeBlock(fileContent);
+    contentList = updateImport(contentList, apiList);
+    contentList = updateService(contentList, apiList);
+    contentList.forEach((t) => {
+      newContent += t + "\n";
+    });
   } else {
     // 生成需要导入的文件
     newContent += getImportContent(apiList);
     // 开始生成请求方法
     newContent += getApiContent(apiList);
+  }
+  if (newContent === "") {
+    return;
   }
   var uint8array = new TextEncoder().encode(newContent);
   await vscode.workspace.fs.writeFile(path, uint8array).then(
@@ -109,34 +103,39 @@ function getApiContent(apiList: IparseToInterfaceResponse[]) {
   let result = "\nexport default {\n";
   apiList.forEach((aItem) => {
     // 写入函数头
-    result += "  " + aItem.apiTitle + "(";
-    result += getFunctionParams(aItem);
-    result += "  ) {\n";
-    // 写入函数体
-    // 先构建url
-    result += "    const url = `" + aItem.path.replace("{", "${") + "`;\n";
-    // 构建return
-    result +=
-      "    return " +
-      aItem.method.toLowerCase() +
-      "<" +
-      aItem.apiResponseInterface +
-      ">(url, " +
-      (aItem.apiQuery !== undefined ? "query, " : "");
-    if (
-      aItem.apiBodyForm !== undefined &&
-      aItem.apiBodyJsonInterface === undefined
-    ) {
-      result +=
-        "data, " +
-        '{\n      "Content-Type": "application/x-www-form-urlencoded"\n    }';
-    }
-    if (aItem.apiBodyJsonInterface !== undefined) {
-      result += "data";
-    }
-    result += ");\n  },\n\n";
+    result += getOneApiContent(aItem);
   });
   result += "}\n";
+  return result;
+}
+
+export function getOneApiContent(aItem: IparseToInterfaceResponse) {
+  let result = "  " + aItem.method.toLowerCase() + aItem.apiTitle + "(";
+  result += getFunctionParams(aItem);
+  result += "  ) {\n";
+  // 写入函数体
+  // 先构建url
+  result += "    const url = `" + aItem.path.replace("{", "${") + "`;\n";
+  // 构建return
+  result +=
+    "    return " +
+    aItem.method.toLowerCase() +
+    "<" +
+    aItem.apiResponseInterface +
+    ">(url, " +
+    (aItem.apiQuery !== undefined ? "query, " : "");
+  if (
+    aItem.apiBodyForm !== undefined &&
+    aItem.apiBodyJsonInterface === undefined
+  ) {
+    result +=
+      "data, " +
+      '{\n      "Content-Type": "application/x-www-form-urlencoded"\n    }';
+  }
+  if (aItem.apiBodyJsonInterface !== undefined) {
+    result += "data";
+  }
+  result += ");\n  },\n\n";
   return result;
 }
 

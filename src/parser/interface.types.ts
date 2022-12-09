@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-01 14:37:43
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 10:21:18
+ * @LastEditTime : 2022-12-08 16:36:32
  */
 
 interface IApiInfo {
