@@ -4,9 +4,9 @@
  * @Author       : zzz
  * @Date         : 2022-12-07 14:41:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 15:42:20
+ * @LastEditTime : 2022-12-19 15:01:55
  */
-export function fileToList(content: string): string[][] {
+export function interfaceFileToCodeBlock(content: string): string[][] {
   let result: string[][] = [];
   let temp: string = "";
   let leftBracketNum = 0;

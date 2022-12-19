@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-07 17:14:58
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-09 14:53:07
+ * @LastEditTime : 2022-12-19 15:16:05
  */
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
@@ -25,7 +25,7 @@ export async function writerApiToFile(
 
   let fileContent = await vscode.workspace.fs.readFile(path).then(
     (data) => new TextDecoder().decode(data),
-    (err) => {
+    () => {
       return undefined;
     }
   );

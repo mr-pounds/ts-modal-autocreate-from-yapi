@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 15:13:29
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-08 15:11:35
+ * @LastEditTime : 2022-12-19 14:57:46
  */
 
 import * as vscode from "vscode";
@@ -91,24 +91,29 @@ export async function controller(args: any) {
 
         // 根据 Json 抽取每个接口包含的 interface
         progress.report({
-          increment: 45,
+          increment: 41,
           message: `正在解析 yapi 的数据`,
         });
         let apiDetailStructList = apiDetailList.map((item) => {
           return parseToInterface(item);
         });
         progress.report({
-          increment: 60,
+          increment: 50,
           message: `yapi 的数据解析完成`,
         });
 
-        // 开始生成公共模型
         progress.report({
-          increment: 65,
-          message: `正在生成公共模型`,
+          increment: 51,
+          message: `正在提取模型数据`,
         });
         let publicInterfaceList: IinterfaceStruct[] = [];
+        let inputBoInterfaceList: IinterfaceStruct[] = [];
+        let inputBoDependPublicInterfaceList: string[] = [];
+        let outputVoInterfaceList: IinterfaceStruct[] = [];
+        let outputVoDependPublicInterfaceList: string[] = [];
+        // 将 api 数据分解到每个文件里
         apiDetailStructList.forEach((aApiDetailStruct) => {
+          // 将 isPublic 为 true 的模型添加到 publicInterfaceList
           aApiDetailStruct.apiBodyJsonDepend?.forEach((aItem) => {
             if (aItem.isPublic) {
               publicInterfaceList.push(aItem);
@@ -119,16 +124,8 @@ export async function controller(args: any) {
               publicInterfaceList.push(aItem);
             }
           });
-        });
-        await writeInterfaceToFile(publicInterfaceUri, publicInterfaceList);
 
-        progress.report({
-          increment: 70,
-          message: `正在生成输入参数的模型`,
-        });
-        let inputBoInterfaceList: IinterfaceStruct[] = [];
-        let inputBoDependPublicInterfaceList: string[] = [];
-        apiDetailStructList.forEach((aApiDetailStruct) => {
+          // 将输入参数的模型添加到 inputBoInterfaceList
           if (aApiDetailStruct.apiQuery !== undefined) {
             inputBoInterfaceList.push(aApiDetailStruct.apiQuery);
           }
@@ -142,20 +139,8 @@ export async function controller(args: any) {
               inputBoDependPublicInterfaceList.push(aItem.name);
             }
           });
-        });
-        await writeInterfaceToFile(
-          inputBoInterfaceUri,
-          inputBoInterfaceList,
-          inputBoDependPublicInterfaceList
-        );
 
-        progress.report({
-          increment: 80,
-          message: `正在生成输出参数的模型`,
-        });
-        let outputVoInterfaceList: IinterfaceStruct[] = [];
-        let outputVoDependPublicInterfaceList: string[] = [];
-        apiDetailStructList.forEach((aApiDetailStruct) => {
+          // 将输出参数的模型添加到 outputVoInterfaceList
           aApiDetailStruct.apiResponseDepend?.forEach((aItem) => {
             if (!aItem.isPublic) {
               outputVoInterfaceList.push(aItem);
@@ -164,12 +149,41 @@ export async function controller(args: any) {
             }
           });
         });
+        progress.report({
+          increment: 60,
+          message: `模型提取完成`,
+        });
+
+        // 开始生成公共模型
+        progress.report({
+          increment: 61,
+          message: `正在生成公共模型`,
+        });
+        await writeInterfaceToFile(publicInterfaceUri, publicInterfaceList);
+
+        // 开始生成输入参数模型
+        progress.report({
+          increment: 70,
+          message: `正在生成输入参数的模型`,
+        });
+        await writeInterfaceToFile(
+          inputBoInterfaceUri,
+          inputBoInterfaceList,
+          inputBoDependPublicInterfaceList
+        );
+
+        // 开始生成输出参数模型
+        progress.report({
+          increment: 80,
+          message: `正在生成输出参数的模型`,
+        });
         await writeInterfaceToFile(
           outputVoInterfaceUri,
           outputVoInterfaceList,
           outputVoDependPublicInterfaceList
         );
 
+        // 开始生成service
         progress.report({
           increment: 90,
           message: `正在生成service文件`,
