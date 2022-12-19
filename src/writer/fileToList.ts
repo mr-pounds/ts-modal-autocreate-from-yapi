@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-07 14:41:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-19 15:01:55
+ * @LastEditTime : 2022-12-19 15:36:01
  */
 export function interfaceFileToCodeBlock(content: string): string[][] {
   let result: string[][] = [];
@@ -13,7 +13,7 @@ export function interfaceFileToCodeBlock(content: string): string[][] {
   for (var line of content.split(/[\r\n]/)) {
     // 为了更好的匹配，要去掉空白符号，因此用tLine
     let tLine = line.replace(/[\s;]/g, "");
-    temp += line;
+    temp += line + "\n";
     if (tLine.endsWith("{")) {
       leftBracketNum += 1;
     }

@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-02 15:44:13
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 14:52:12
+ * @LastEditTime : 2022-12-19 15:26:53
  */
 import * as vscode from "vscode";
 import { dirname } from "path";
@@ -120,4 +120,14 @@ export function dataType(type: string) {
     default:
       return type;
   }
+}
+
+export function validList(t: any) {
+  if (t === undefined || t === null) {
+    return false;
+  }
+  if (t.length === 0) {
+    return false;
+  }
+  return true;
 }

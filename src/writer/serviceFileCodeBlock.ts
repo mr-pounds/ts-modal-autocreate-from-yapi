@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-08 16:29:05
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-09 14:56:06
+ * @LastEditTime : 2022-12-19 15:45:01
  */
 import { IparseToInterfaceResponse } from "../parser/parseToInterface";
 import { getOneApiContent } from "./writeApiToFile";
@@ -24,7 +24,7 @@ export function fileToCodeBlock(content: string) {
     bigBracketNum -= tLine.startsWith("}") ? 1 : 0;
     smallBracketNum -= tLine.startsWith(")") ? 1 : 0;
     if (bigBracketNum === 0 && smallBracketNum === 0) {
-      console.log("check", temp.split("\n").length);
+      // console.log("check", temp.split("\n").length);
       result.push(temp);
       temp = "";
     } else {
@@ -47,7 +47,6 @@ export function updateImport(
       block.includes('from "./inputBo.types"')
     ) {
       // 处理input依赖的内容
-      console.log("222", block.split("\n").length);
       let needImportList: string[] = [];
       apiList.forEach((aApi) => {
         if (aApi.apiQuery !== undefined) {

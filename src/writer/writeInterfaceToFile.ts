@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-12-02 13:45:41
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-19 15:14:55
+ * @LastEditTime : 2022-12-19 15:37:42
  */
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
@@ -15,6 +15,9 @@ export async function writeInterfaceToFile(
   interfaceList: IinterfaceStruct[],
   dependPublicInterfaceList: string[] = []
 ) {
+  if (interfaceList === undefined) {
+    return;
+  }
   // 若存在该文件，便读取该文件内容
   let fileContent = await vscode.workspace.fs.readFile(path).then(
     (data) => new TextDecoder().decode(data),
@@ -49,7 +52,7 @@ export async function writeInterfaceToFile(
         t[1].includes('from "./public.types"') &&
         dependPublicInterfaceList.length > 0
       ) {
-        newContent += updateImport(t[1], dependPublicInterfaceList);
+        newContent += updateImport(t[1], dependPublicInterfaceList) + "\n";
       }
       newContent += t[1];
     });

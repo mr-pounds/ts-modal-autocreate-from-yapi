@@ -4,9 +4,9 @@
  * @Author       : zzz
  * @Date         : 2022-12-01 11:29:34
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-07 17:24:45
+ * @LastEditTime : 2022-12-19 15:39:32
  */
-import { getApiTitle, dataType } from "../utils";
+import { getApiTitle, dataType, validList } from "../utils";
 import { jsonToInterface } from "./jsonToInterface";
 
 export interface IparseToInterfaceResponse {
@@ -29,48 +29,47 @@ export function parseToInterface(apiInfo: IApiInfo): IparseToInterfaceResponse {
     apiInfo.params.map((item) => item.name)
   );
   // 解析 params 的 interface
-  const apiParams: IApiReqParams[] | undefined =
-    apiInfo.params.length !== 0 ? apiInfo.params : undefined;
+  const apiParams: IApiReqParams[] | undefined = validList(apiInfo.params)
+    ? apiInfo.params
+    : undefined;
 
   // 解析 query 的 interface
-  const apiQuery: IinterfaceStruct | undefined =
-    apiInfo.query.length !== 0
-      ? {
-          name: "I" + apiBaseTitle + "Query",
-          isPublic: false,
-          fields: apiInfo.query.map((item) => {
-            return {
-              required: item.required === "1",
-              name: item.name,
-              type: "string",
-              desc: item.desc,
-            };
-          }),
-        }
-      : undefined;
+  const apiQuery: IinterfaceStruct | undefined = validList(apiInfo.query)
+    ? {
+        name: "I" + apiBaseTitle + "Query",
+        isPublic: false,
+        fields: apiInfo.query.map((item) => {
+          return {
+            required: item.required === "1",
+            name: item.name,
+            type: "string",
+            desc: item.desc,
+          };
+        }),
+      }
+    : undefined;
 
   // 解析 bodyform 的 interface
-  const apiBodyForm: IinterfaceStruct | undefined =
-    apiInfo.bodyForm?.length !== 0
-      ? {
-          name: "I" + apiBaseTitle + "BodyForm",
-          isPublic: false,
-          fields: apiInfo.bodyForm!.map((item) => {
-            return {
-              required: item.required === "1",
-              name: item.name,
-              type: dataType(item.type),
-              desc: item.desc,
-              example: item.example,
-            };
-          }),
-        }
-      : undefined;
+  const apiBodyForm: IinterfaceStruct | undefined = validList(apiInfo.bodyForm)
+    ? {
+        name: "I" + apiBaseTitle + "BodyForm",
+        isPublic: false,
+        fields: apiInfo.bodyForm!.map((item) => {
+          return {
+            required: item.required === "1",
+            name: item.name,
+            type: dataType(item.type),
+            desc: item.desc,
+            example: item.example,
+          };
+        }),
+      }
+    : undefined;
 
   // 解析 bodyjson 的 interface
   let apiBodyJsonInterface = undefined;
   let apiBodyJsonDepend: IinterfaceStruct[] = [];
-  if (Object.keys(apiInfo.bodyJson!).length !== 0) {
+  if (apiInfo.bodyJson && Object.keys(apiInfo.bodyJson!).length !== 0) {
     const result = jsonToInterface(
       apiBaseTitle + "BodyJson",
       apiInfo.bodyJson!
@@ -82,7 +81,7 @@ export function parseToInterface(apiInfo: IApiInfo): IparseToInterfaceResponse {
   // 解析 response 的 interface
   let apiResponseInterface = undefined;
   let apiResponseDepend: IinterfaceStruct[] = [];
-  if (Object.keys(apiInfo.response!).length !== 0) {
+  if (apiInfo.response && Object.keys(apiInfo.response!).length !== 0) {
     const result = jsonToInterface(
       apiBaseTitle + "Response",
       apiInfo.response!

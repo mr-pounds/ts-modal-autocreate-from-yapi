@@ -6,7 +6,7 @@ import { camelCase, dataType } from "../utils";
  * @Author       : zzz
  * @Date         : 2022-12-01 14:34:50
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-08 15:26:24
+ * @LastEditTime : 2022-12-19 15:40:33
  */
 interface IjsonToInterfaceResponse {
   current: IinterfaceStruct;
@@ -39,7 +39,9 @@ export function jsonToInterface(
         fields.push({
           name: key,
           type: t.current.name,
-          required: content.required.indexOf(key) >= 0,
+          required: content.required
+            ? content.required.indexOf(key) >= 0
+            : false,
           desc: content.properties[key]["desc"],
         });
         denpend.push(...t.denpend);
@@ -53,7 +55,9 @@ export function jsonToInterface(
         fields.push({
           name: key,
           type: arrayResult.type,
-          required: content.required.indexOf(key) >= 0,
+          required: content.required
+            ? content.required.indexOf(key) >= 0
+            : false,
           desc: content.properties[key]["desc"],
         });
         denpend.push(...arrayResult.depend);
@@ -62,7 +66,9 @@ export function jsonToInterface(
         fields.push({
           name: key,
           type: dataType(content.properties[key]["type"]),
-          required: content.required.indexOf(key) >= 0,
+          required: content.required
+            ? content.required.indexOf(key) >= 0
+            : false,
           desc: content.properties[key]["desc"],
         });
     }

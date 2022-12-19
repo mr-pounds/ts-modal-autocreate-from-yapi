@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 21:10:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-06 15:28:56
+ * @LastEditTime : 2022-12-19 15:23:58
  */
 import * as vscode from "vscode";
 import { configuration } from "./utils";
@@ -61,7 +61,7 @@ export async function chooseYApiProject() {
   const yapiProjectList = configuration.yapiProjectList();
 
   // 若配置中，没有有效的配置数据，就直接新增项目
-  if (yapiProjectList.length === 0) {
+  if (yapiProjectList === undefined || yapiProjectList.length === 0) {
     return await addYApiProject();
   }
 
