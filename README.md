@@ -1,71 +1,13 @@
-# ts-modal-autocreate-from-yapi README
+# ts-modal-autocreate-from-yapi 
 
-This is the README for your extension "ts-modal-autocreate-from-yapi". After writing up a brief description, we recommend including the following sections.
+ts-modal-autocreate-from-yapi 用于根据 YApi 的接口自动生成 service 接口及数据模型。让前端团队更多精力关注在页面实现上。目前工具处于测试阶段，可能存在较多问题。
 
-## Features
+## features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+1. YApi 的响应模型里，默认读取 data 对象，不会处理 message、sucess、code 等字段；
+2. 插件会自动生成4个文件
+   - public.types.ts: 将可能会在页面使用到的模型；
+   - inputBo.types.ts: 接口请求中，query、body模型；
+   - outputVo.types.ts: 接口返回参数的模型；
+   - services.ts: 供页面调用的接口方法。
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
