@@ -3,7 +3,13 @@
   "displayName": "ts_modal_autocreate_from_yapi",
   "description": "auto create typescript types and apis from yapi apis.",
   "version": "0.0.1",
-  "repository": "https://github.com/mr-pounds/ts-modal-autocreate-from-yapi",
+  "homepage": "https://github.com/mr-pounds/ts-modal-autocreate-from-yapi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mr-pounds/ts-modal-autocreate-from-yapi.git"
+  },
+  "icon": "./images/logo_blue.ico",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
     "vscode": "^1.73.0"
   },
