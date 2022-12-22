@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 17:02:33
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-02 15:53:20
+ * @LastEditTime : 2022-12-22 13:26:42
  */
 import * as vscode from "vscode";
 
@@ -20,7 +20,7 @@ export function hostInputBox() {
   return inputBox({
     title: "YApi Host",
     password: false,
-    ignoreFocusOut: false,
+    ignoreFocusOut: true,
     placeHolder: "Please enter yapi host",
     validateInput: (text: any) => {
       if (!(text.startsWith("http://") || text.startsWith("https://"))) {

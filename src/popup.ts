@@ -4,7 +4,7 @@
  * @Author       : zzz
  * @Date         : 2022-11-29 21:10:52
  * @LastEditors  : zzz
- * @LastEditTime : 2022-12-19 15:23:58
+ * @LastEditTime : 2022-12-22 13:29:25
  */
 import * as vscode from "vscode";
 import { configuration } from "./utils";
@@ -70,7 +70,9 @@ export async function chooseYApiProject() {
   let yapiProjectTitleList = yapiProjectList.map((item) => item.title);
   yapiProjectTitleList.push(newProjectPlaceHolder);
   return await vscode.window
-    .showQuickPick(yapiProjectTitleList!)
+    .showQuickPick(yapiProjectTitleList!, {
+      ignoreFocusOut: true,
+    })
     .then(async (value) => {
       // 中断输入，则返回 undefined
       if (value === undefined) {
@@ -105,6 +107,7 @@ export async function chooseApis(host: string, token: string) {
       apiList.map((item) => item.title),
       {
         canPickMany: true,
+        ignoreFocusOut: true,
       }
     )
     .then((values) => values);
